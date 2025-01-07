@@ -8,7 +8,7 @@ from unicodedata import category
 
 print("     Personal Expense Tracker    ")
 
-meniu = ["Add payment", "Show all payments from DB", "Edit payment", "Delete payment"]
+meniu = ["Add payment", "Show all payments from DB", "Edit payment", "Delete payment", "Exit"]
 
 
 date_time = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -31,7 +31,8 @@ def add_payment():
             "description": description
         }
 
-        print(f"Payment saved: {payment_info}")
+        payment_info_str = f"<<< {date_time} - {category} - {ammount} - {description} >>>"
+        print(f"Payment saved: {payment_info_str}")
         any_options = input("Add another payment? Y/N\n").lower()
         istoric.append(payment_info)
         if any_options == "n":
@@ -65,14 +66,19 @@ def edit_payment():
             print(f"<<< {istoric[edit_payment -1]} >>> was selected")
             what_to_edit = input("What do you wanna change? (Category, money spend or description)\n").lower()
             if what_to_edit == "category":
+                print(istoric)
                 new_value = input("Enter the new value:\n")
-                istoric[1]["category"] = new_value
+                istoric[0]["category"] = new_value
+                if istoric[0]["category"] != new_value:
+                    print("There was a problem during the process.")
+                else:
+                    print("New value saved")
             elif what_to_edit == "money spend":
                 new_value1 = input("Enter the new value:\n")
-                istoric[2]["amount"] = new_value1
+                istoric[0]["amount"] = new_value1
             else:
                 new_value2 = input("Enter the new value:\n")
-                istoric[3]["description"] = new_value2
+                istoric[0]["description"] = new_value2
     except ValueError:
         print("Thats not a valid value!")
 
@@ -95,3 +101,6 @@ while True:
         show_payment()
     elif start == "3":
         edit_payment()
+    else:
+        print("You exit the program")
+        break

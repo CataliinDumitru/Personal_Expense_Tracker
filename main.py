@@ -2,9 +2,7 @@
 
 import sqlite3
 from datetime import datetime
-from os import execle
-from types import new_class
-from unicodedata import category
+from logging import ERROR
 
 print("     Personal Expense Tracker    ")
 
@@ -19,26 +17,55 @@ istoric = []
 def add_payment():
     """Add a payment and return the info of the payment"""
     global istoric
+
     while True:
-        category = input("Category (Food, Health, Lifestyle, Hobby, Other)\n")
-        ammount = input("Ammount of money spend\n")
-        description = input("Description (Optional)\n")
+        try:
+            # Validare pentru categorie
+            while True:
+                category = input("Category (Food, Health, Lifestyle, Hobby, Other)\n")
+                if not category.isalpha():  # Verificare dacă inputul conține doar litere
+                    print("This section takes only letters. Please try again.")
+                else:
+                    break
 
-        payment_info = payment_info = {
-            "date": date_time,
-            "category": category,
-            "amount": ammount,
-            "description": description
-        }
+            # Validare pentru sumă
+            while True:
+                ammount = input("Amount of money spent\n")
+                try:
+                    ammount = float(ammount)  # Conversie în float pentru valori zecimale
+                    if ammount <= 0:
+                        print("The amount must be greater than 0. Please try again.")
+                    else:
+                        break
+                except ValueError:
+                    print("Please enter a valid numeric value. E.g., 10.50, 20, 3.50")
 
-        payment_info_str = f"<<< {date_time} - {category} - {ammount} - {description} >>>"
-        print(f"Payment saved: {payment_info_str}")
-        any_options = input("Add another payment? Y/N\n").lower()
-        istoric.append(payment_info)
-        if any_options == "n":
-            break
-        else:
-            continue
+            # Descrierea este opțională
+            description = input("Description (Optional)\n")
+
+            # Crearea informației despre plată
+            date_time = datetime.now().strftime("%Y-%m-%d %H:%M")
+            payment_info = {
+                "date": date_time,
+                "category": category,
+                "amount": ammount,
+                "description": description
+            }
+
+            # Adăugarea în istoric
+            istoric.append(payment_info)
+
+            # Afișarea plății salvate
+            payment_info_str = f"<<< {date_time} - {category} - {ammount} - {description} >>>"
+            print(f"Payment saved: {payment_info_str}")
+
+            # Întreabă utilizatorul dacă dorește să adauge o altă plată
+            any_options = input("Add another payment? Y/N\n").lower()
+            if any_options == "n":
+                break
+
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
 
     return
 
@@ -54,6 +81,7 @@ def show_payment():
 
 
 def edit_payment():
+    """This function select the payment that the user want to edit and modify the category, ammount of money spent and the description."""
     global istoric
     x = 0
     for element in istoric:
@@ -69,7 +97,7 @@ def edit_payment():
                 print(istoric)
                 new_value = input("Enter the new value:\n")
                 istoric[0]["category"] = new_value
-                if istoric[0]["category"] != new_value:
+                if istoric[0]["category"] != new_value:  # Here is a caution code block to test the code functionality
                     print("There was a problem during the process.")
                 else:
                     print("New value saved")

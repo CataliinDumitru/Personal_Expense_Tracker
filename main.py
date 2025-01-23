@@ -1,8 +1,8 @@
 # Personal Expense Tracker
 
-import sqlite3
+
 from datetime import datetime
-from logging import ERROR, raiseExceptions
+
 
 print("     Personal Expense Tracker    ")
 
@@ -13,6 +13,11 @@ date_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 istoric = []
 
+
+def to_string(text):
+    string = list(text)
+    for key, value in text:
+        print(f"{key}, {value}") # Functia asta trebuie dusa mai jos, si sa inlocuiesc la add_payment/payment_info fstringurile ammount, category si ce mai e acolo
 
 def add_payment():
     """Add a payment and return the info of the payment"""

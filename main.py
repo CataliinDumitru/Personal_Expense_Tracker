@@ -2,11 +2,12 @@
 
 
 from datetime import datetime
+import csv
 
 
 print("     Personal Expense Tracker    ")
 
-meniu = ["Add payment", "Show all payments from DB", "Edit payment", "Delete payment", "Exit"]
+meniu = ["Add payment", "Show all payments from DB", "Edit payment", "Delete payment", "Export to CSV", "Exit"]
 
 
 date_time = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -14,10 +15,7 @@ date_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 istoric = []
 
 
-def to_string(text):
-    string = list(text)
-    for key, value in text:
-        print(f"{key}, {value}") # Functia asta trebuie dusa mai jos, si sa inlocuiesc la add_payment/payment_info fstringurile ammount, category si ce mai e acolo
+
 
 def add_payment():
     """Add a payment and return the info of the payment"""
@@ -123,7 +121,6 @@ def delete():
     for payment in istoric:
         print(payment)
 
-
     while True:
         delete_payment = input("What payment do you want to delete?\n")
         if not delete_payment.isdigit():
@@ -136,6 +133,22 @@ def delete():
     if istoric[int(delete_payment) - 1]:
         print(f"<<< {istoric[int(delete_payment) -1]} >>> was selected and succesfully deleted!")
         del istoric[int(delete_payment) - 1]
+
+
+
+#At this moment the CSV function needs to eneter the values in the file
+#TODO Fix the CSV data file
+def to_CSV():
+    '''This function convert into a custom CSV file the history of the user payments.'''
+    global istoric
+    username = input("Enter your name:\n")
+    with open(f"{username}.csv", mode='w', newline='', encoding='utf-8') as file:
+        content = csv.writer(file)
+        header = ["Date", "Category", "Ammount", "Description"]
+        content.writerow(header)
+        content.writerows(istoric)
+    print(f"The {username} file has been succesfully created.")
+
 
 
 while True:
@@ -157,6 +170,8 @@ while True:
         edit_payment()
     elif start == "4":
         delete()
+    elif start == "5":
+        to_CSV()
     else:
         print("You exit the program")
         break

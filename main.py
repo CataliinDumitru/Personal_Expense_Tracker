@@ -2,20 +2,17 @@
 import os.path
 from datetime import datetime
 import csv
-from os.path import exists
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 print("     Personal Expense Tracker    ")
 
-meniu = ["Add payment", "Show all payments from DB", "Edit payment", "Delete payment", "Export to CSV", "Exit"]
-
+meniu = ["Add payment", "Show all payments from DB", "Edit payment", "Delete payment", "Export to CSV", "Statistics", "Exit"]
 
 date_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 istoric = []
-
-
-
 
 def add_payment():
     """Add a payment and return the info of the payment"""
@@ -157,6 +154,36 @@ def to_CSV():
         print(f"An error occurred: {e}.")
 
 
+def statistics(): #Momentan am reusit sa fac partea vizuala sa functioneze. #TODO Maine trebuie sa termin toata functia
+'''This function generates a statistical visualisation of a report that the user choose'''
+    file_path = f"/Users/catalindumitru/Personal_Expense_Tracker/"
+    show_file = os.listdir(file_path)
+    for file in show_file:
+        index = 0
+        index += 1
+        if file.endswith(".csv"):
+            print(f"{index}. {file}")
+
+    graph_rep = input("For which report do you need a graphic representation?\n").lower()
+    with open(f"{graph_rep}.csv", mode="r", newline="", encoding="utf-8") as data:
+        csv_reader = csv.DictReader(data)
+        stored_data = []
+        for row in csv_reader:
+            stored_data.append(row)
+
+        values_for_graph = []
+        for value in stored_data:
+            values_for_graph.append(value["Amount"])
+
+
+        y = np.array(list(values_for_graph))
+        labels = ["Food", "Health", "Lifestyle", "Hobby", "Others"]
+
+        fig, ax = plt.subplots()
+        plt.pie(y, labels=labels)
+        plt.legend()
+        plt.show()
+
 
 while True:
 
@@ -179,6 +206,8 @@ while True:
         delete()
     elif start == "5":
         to_CSV()
+    elif start == "6":
+        statistics()
     else:
         print("You exit the program")
         break

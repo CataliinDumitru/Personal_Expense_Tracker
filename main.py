@@ -33,10 +33,10 @@ def add_payment():
 
             # Validare pentru sumă
             while True:
-                ammount = input("Amount of money spent\n")
+                amount = input("Amount of money spent\n")
                 try:
-                    ammount = float(ammount)  # Conversie în float pentru valori zecimale
-                    if ammount <= 0:
+                    amount = float(amount)  # Conversie în float pentru valori zecimale
+                    if amount <= 0:
                         print("The amount must be greater than 0. Please try again.")
                     else:
                         break
@@ -49,17 +49,17 @@ def add_payment():
             # Crearea informației despre plată
             date_time = datetime.now().strftime("%Y-%m-%d %H:%M")
             payment_info = {
-                "date": date_time,
-                "category": category,
-                "amount": ammount,
-                "description": description
+                "Date": date_time,
+                "Category": category,
+                "Amount": amount,
+                "Description": description
             }
 
             # Adăugarea în istoric
             istoric.append(payment_info)
 
             # Afișarea plății salvate
-            payment_info_str = f"<<< {date_time} - {category} - {ammount} - {description} >>>"
+            payment_info_str = f"<<< {date_time} - {category} - {amount} - {description} >>>"
             print(f"Payment saved: {payment_info_str}")
 
             # Întreabă utilizatorul dacă dorește să adauge o altă plată
@@ -84,7 +84,7 @@ def show_payment():
 
 
 def edit_payment():
-    """This function select the payment that the user want to edit and modify the category, ammount of money spent and the description."""
+    """This function select the payment that the user want to edit and modify the category, amount of money spent and the description."""
     global istoric
     x = 0
     for element in istoric:
@@ -111,7 +111,7 @@ def edit_payment():
                 new_value2 = input("Enter the new value:\n")
                 istoric[0]["description"] = new_value2
     except ValueError:
-        print("Thats not a valid value!")
+        print("That's not a valid value!")
 
 
 
@@ -131,23 +131,29 @@ def delete():
             break
 
     if istoric[int(delete_payment) - 1]:
-        print(f"<<< {istoric[int(delete_payment) -1]} >>> was selected and succesfully deleted!")
+        print(f"<<< {istoric[int(delete_payment) -1]} >>> was selected and successfully deleted!")
         del istoric[int(delete_payment) - 1]
 
 
 
-#At this moment the CSV function needs to eneter the values in the file
-#TODO Fix the CSV data file
+
 def to_CSV():
     '''This function convert into a custom CSV file the history of the user payments.'''
     global istoric
-    username = input("Enter your name:\n")
-    with open(f"{username}.csv", mode='w', newline='', encoding='utf-8') as file:
-        content = csv.writer(file)
-        header = ["Date", "Category", "Ammount", "Description"]
-        content.writerow(header)
-        content.writerows(istoric)
-    print(f"The {username} file has been succesfully created.")
+    try:
+        username = input("Enter your name:\n")
+        if len(istoric) == 0:
+            print("There are no data to convert.")
+            pass
+        elif len(istoric) >= 1:
+            with open(f"{username}.csv", mode='w', newline='', encoding='utf-8') as file:
+                header = ["Date", "Category", "Amount", "Description"]
+                content = csv.DictWriter(file, fieldnames = header)
+                content.writeheader()
+                content.writerows(istoric)
+            print(f"The {username} file has been successfully created.")
+    except Exception as e:
+        print(f"An error occurred: {e}.")
 
 
 

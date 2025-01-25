@@ -1,8 +1,8 @@
 # Personal Expense Tracker
-
-
+import os.path
 from datetime import datetime
 import csv
+from os.path import exists
 
 
 print("     Personal Expense Tracker    ")
@@ -75,12 +75,8 @@ def add_payment():
 def show_payment():
     global istoric
 
-    x = 0
     for element in istoric:
-        x += 1
-        print(f"{x}. {element}")
-    return
-
+        print(f"{element['Date']} - {element['Category']} - {element['Amount']} - {element['Description']}")
 
 
 def edit_payment():
@@ -142,13 +138,18 @@ def to_CSV():
     global istoric
     try:
         username = input("Enter your name:\n")
+        file_path = f"/Users/catalindumitru/Personal_Expense_Tracker/{username}.csv"
         if len(istoric) == 0:
             print("There are no data to convert.")
             pass
+        elif os.path.exists(file_path):
+            with open(file_path, mode="a", newline="", encoding='utf-8') as existing_file:
+                existing_data = csv.DictWriter(existing_file, fieldnames=["Date", "Category", "Amount", "Description"])
+                existing_data.writerows(istoric)
+            print("You document has been updated.")
         elif len(istoric) >= 1:
-            with open(f"{username}.csv", mode='w', newline='', encoding='utf-8') as file:
-                header = ["Date", "Category", "Amount", "Description"]
-                content = csv.DictWriter(file, fieldnames = header)
+            with open(file_path, mode='w', newline='', encoding='utf-8') as file:
+                content = csv.DictWriter(file, fieldnames=["Date", "Category", "Amount", "Description"])
                 content.writeheader()
                 content.writerows(istoric)
             print(f"The {username} file has been successfully created.")

@@ -8,7 +8,7 @@ import numpy as np
 
 print("     Personal Expense Tracker    ")
 
-meniu = ["Add payment", "Show all payments from DB", "Edit payment", "Delete payment", "Export to CSV", "Statistics", "Exit"]
+meniu = ["Add payment", "Show all payments", "Edit payment", "Delete payment", "Export to CSV", "Statistics", "Exit"]
 
 date_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
@@ -17,6 +17,15 @@ istoric = []
 def add_payment():
     """Add a payment and return the info of the payment"""
     global istoric
+
+    file_path_history = "/Users/catalindumitru/Personal_Expense_Tracker/history.csv"
+    if os.path.exists(file_path_history):
+        pass
+    else:
+        with open("history.csv", mode="w", newline="", encoding="utf-8") as data:
+            history_data = csv.DictWriter(data, fieldnames=["Date", "Category", "Amount", "Description"])
+            history_data.writeheader()
+
 
     while True:
         try:
@@ -59,6 +68,11 @@ def add_payment():
             payment_info_str = f"<<< {date_time} - {category} - {amount} - {description} >>>"
             print(f"Payment saved: {payment_info_str}")
 
+            with open(file_path_history, mode="a", newline="", encoding="utf-8") as data:
+                data_to_append = csv.DictWriter(data, fieldnames=["Date", "Category", "Amount", "Description"])
+                data_to_append.writerows(istoric)
+
+
             # Întreabă utilizatorul dacă dorește să adauge o altă plată
             any_options = input("Add another payment? Y/N\n").lower()
             if any_options == "n":
@@ -70,10 +84,12 @@ def add_payment():
     return
 
 def show_payment():
-    global istoric
-
-    for element in istoric:
-        print(f"{element['Date']} - {element['Category']} - {element['Amount']} - {element['Description']}")
+    with open("history.csv", mode="r", newline="", encoding="utf-8") as f:
+        data_reader = csv.DictReader(f)
+        data = []
+        for row in data_reader:
+            data.append(row)
+            print(f"{row['Date']} - {row['Category']} - {row['Amount']} - {row['Description']}")
 
 
 def edit_payment():
@@ -145,7 +161,7 @@ def to_CSV():
                 existing_data.writerows(istoric)
             print("You document has been updated.")
         elif len(istoric) >= 1:
-            with open(file_path, mode='w', newline='', encoding='utf-8') as file:
+            with open(file_path, mode='w', newline="", encoding='utf-8') as file:
                 content = csv.DictWriter(file, fieldnames=["Date", "Category", "Amount", "Description"])
                 content.writeheader()
                 content.writerows(istoric)
@@ -154,10 +170,13 @@ def to_CSV():
         print(f"An error occurred: {e}.")
 
 
-def statistics(): #Momentan am reusit sa fac partea vizuala sa functioneze. #TODO Maine trebuie sa termin toata functia
-'''This function generates a statistical visualisation of a report that the user choose'''
+def statistics():  #TODO Maine trebuie sa termin toata functia
+    '''This function generates a statistical visualisation of a report that the user choose'''
+
+    #All the CSV file are list in the GUI and the user pick from one of them
     file_path = f"/Users/catalindumitru/Personal_Expense_Tracker/"
     show_file = os.listdir(file_path)
+
     for file in show_file:
         index = 0
         index += 1
@@ -165,24 +184,27 @@ def statistics(): #Momentan am reusit sa fac partea vizuala sa functioneze. #TOD
             print(f"{index}. {file}")
 
     graph_rep = input("For which report do you need a graphic representation?\n").lower()
+
     with open(f"{graph_rep}.csv", mode="r", newline="", encoding="utf-8") as data:
         csv_reader = csv.DictReader(data)
         stored_data = []
         for row in csv_reader:
             stored_data.append(row)
 
+        category_for_data = []
         values_for_graph = []
         for value in stored_data:
             values_for_graph.append(value["Amount"])
+            category_for_data.append(value["Category"])
 
+        #Here is where the graphic it's created
+    y = np.array(list(values_for_graph))
+    labels = category_for_data
 
-        y = np.array(list(values_for_graph))
-        labels = ["Food", "Health", "Lifestyle", "Hobby", "Others"]
-
-        fig, ax = plt.subplots()
-        plt.pie(y, labels=labels)
-        plt.legend()
-        plt.show()
+    fig, ax = plt.subplots()
+    plt.pie(y, labels=labels)
+    plt.legend()
+    plt.show()
 
 
 while True:
@@ -211,3 +233,4 @@ while True:
     else:
         print("You exit the program")
         break
+

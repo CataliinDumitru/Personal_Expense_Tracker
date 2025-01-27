@@ -170,21 +170,18 @@ def to_CSV():
         print(f"An error occurred: {e}.")
 
 
-def statistics():  #TODO Maine trebuie sa termin toata functia
+def statistics():
     '''This function generates a statistical visualisation of a report that the user choose'''
 
     #All the CSV file are list in the GUI and the user pick from one of them
     file_path = f"/Users/catalindumitru/Personal_Expense_Tracker/"
     show_file = os.listdir(file_path)
 
-    for file in show_file:
-        index = 0
-        index += 1
+    for index, file in enumerate(show_file, 1):
         if file.endswith(".csv"):
             print(f"{index}. {file}")
 
     graph_rep = input("For which report do you need a graphic representation?\n").lower()
-
     with open(f"{graph_rep}.csv", mode="r", newline="", encoding="utf-8") as data:
         csv_reader = csv.DictReader(data)
         stored_data = []

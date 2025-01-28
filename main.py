@@ -70,7 +70,7 @@ def add_payment():
 
             with open(file_path_history, mode="a", newline="", encoding="utf-8") as data:
                 data_to_append = csv.DictWriter(data, fieldnames=["Date", "Category", "Amount", "Description"])
-                data_to_append.writerows(istoric)
+                data_to_append.writerow(payment_info)
 
 
             # Întreabă utilizatorul dacă dorește să adauge o altă plată
@@ -84,6 +84,7 @@ def add_payment():
     return
 
 def show_payment():
+
     with open("history.csv", mode="r", newline="", encoding="utf-8") as f:
         data_reader = csv.DictReader(f)
         data = []
@@ -94,54 +95,71 @@ def show_payment():
 
 def edit_payment():
     """This function select the payment that the user want to edit and modify the category, amount of money spent and the description."""
-    global istoric
-    x = 0
-    for element in istoric:
-        x += 1
-        print(f"{x}. {element}")
+    with open("history.csv", mode="r", newline="", encoding="utf-8") as f:
+        data_reader = csv.DictReader(f)
+        data = []
+        for row in data_reader:
+            data.append(row)
+            print(f"{row['Date']} - {row['Category']} - {row['Amount']} - {row['Description']}")
 
-    edit_payment = int(input("What payment do you wanna edit?\n"))
     try:
-        if istoric[edit_payment - 1]:
-            print(f"<<< {istoric[edit_payment -1]} >>> was selected")
+        edit_payment = int(input("What payment do you wanna edit?\n"))
+        if data[edit_payment - 1]:
+#            print(f"<<< {data[edit_payment - 1]} >>> was selected")
             what_to_edit = input("What do you wanna change? (Category, money spend or description)\n").lower()
             if what_to_edit == "category":
-                print(istoric)
+                print(str(data))
                 new_value = input("Enter the new value:\n")
-                istoric[0]["category"] = new_value
-                if istoric[0]["category"] != new_value:  # Here is a caution code block to test the code functionality
+                data[0]["Category"] = new_value
+
+                if data[0]["Category"] != new_value:  # Here is a caution code block to test the code functionality
                     print("There was a problem during the process.")
                 else:
                     print("New value saved")
-            elif what_to_edit == "money spend":
+            elif what_to_edit == "money":
                 new_value1 = input("Enter the new value:\n")
-                istoric[0]["amount"] = new_value1
+                data[0]["Amount"] = new_value1
             else:
                 new_value2 = input("Enter the new value:\n")
-                istoric[0]["description"] = new_value2
+                data[0]["Description"] = new_value2
+
+            with open("history.csv", mode="w", newline="", encoding="utf-8") as f:
+                csv_writter = csv.DictWriter(f, fieldnames=["Date", "Category", "Amount", "Description"])
+                csv_writter.writeheader()
+                csv_writter.writerows(data)
+
     except ValueError:
         print("That's not a valid value!")
 
 
 
 def delete():
-    global istoric
-
-    for payment in istoric:
-        print(payment)
+    with open("history.csv", mode="r", newline="", encoding="utf-8") as f:
+        data_reader = csv.DictReader(f)
+        data = []
+        for row in data_reader:
+            data.append(row)
+            print(f"{row['Date']} - {row['Category']} - {row['Amount']} - {row['Description']}")
 
     while True:
         delete_payment = input("What payment do you want to delete?\n")
         if not delete_payment.isdigit():
             print("You need to enter only numbers.")
-        elif int(delete_payment) > len(istoric):
+        elif int(delete_payment) > len(data):
             print("This number is out of range.")
         else:
             break
 
-    if istoric[int(delete_payment) - 1]:
-        print(f"<<< {istoric[int(delete_payment) -1]} >>> was selected and successfully deleted!")
-        del istoric[int(delete_payment) - 1]
+    if data[int(delete_payment) - 1]:
+        print(
+            f"{data[int(delete_payment) - 1]['Date']} - {data[int(delete_payment) - 1]['Category']} - {data[int(delete_payment) - 1]['Amount']} - {data[int(delete_payment) - 1]['Description']} was selected and successfully deleted!")
+        del data[int(delete_payment) - 1]
+
+
+    with open("history.csv", mode="w", newline="", encoding="utf-8") as f:
+        csv_writter = csv.DictWriter(f, fieldnames=["Date", "Category", "Amount", "Description"])
+        csv_writter.writeheader()
+        csv_writter.writerows(data)
 
 
 
@@ -206,11 +224,11 @@ def statistics():
 
 while True:
 
-    x = 0
+
     print()
-    for element in meniu:
-        x += 1
-        print(f"{x}. {element}")
+    for number, element in enumerate(meniu, 1):
+
+        print(f"{number}. {element}")
 
     start = input("What do you like to do?\n")
 
@@ -230,4 +248,3 @@ while True:
     else:
         print("You exit the program")
         break
-
